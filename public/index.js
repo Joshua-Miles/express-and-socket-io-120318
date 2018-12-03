@@ -1,20 +1,20 @@
 const socket = io.connect('http://localhost:3000');
 const myCharacter = new Character(window.prompt('Please enter your name:'))
 
-const addCharacter = function(properties){
-    let character = new Character(properties.name)
-    Object.assign(character,properties)
-    socket.on(character.name, properties => {
-        Object.assign(character, properties)
+const addCharacter = function(added){
+    let character = new Character(added.name)
+    character.state = added.state
+    socket.on(character.name, updated => {
+        character.state = updated.state
     })
 }
 
-socket.emit('join', myCharacter, function(characters){
+socket.emit('join', myCharacter.state, function(characters){
     characters.forEach(addCharacter)
 })
 
-socket.on('joined', (name) => {
-    addCharacter(name)
+socket.on('joined', (character) => {
+    addCharacter(character)
 })
 
 document.addEventListener('keydown', function(e){
@@ -33,7 +33,7 @@ document.addEventListener('keydown', function(e){
             myCharacter.walkNorth()
         break;
     }
-    socket.emit('update', myCharacter)
+    socket.emit('update', myCharacter.state)
 })
 
 document.addEventListener('keyup', function(e){
@@ -51,5 +51,5 @@ document.addEventListener('keyup', function(e){
             myCharacter.stopNorth()
         break;
     }
-    socket.emit('update', myCharacter)
+    socket.emit('update', myCharacter.state)
 })

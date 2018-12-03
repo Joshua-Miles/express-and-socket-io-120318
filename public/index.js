@@ -1,4 +1,21 @@
-let myCharacter = new Character('Joshua')
+const socket = io.connect('http://localhost:3000');
+const myCharacter = new Character(window.prompt('Please enter your name:'))
+
+const addCharacter = function(properties){
+    let character = new Character(properties.name)
+    Object.assign(character,properties)
+    socket.on(character.name, properties => {
+        Object.assign(character, properties)
+    })
+}
+
+socket.emit('join', myCharacter, function(characters){
+    characters.forEach(addCharacter)
+})
+
+socket.on('joined', (name) => {
+    addCharacter(name)
+})
 
 document.addEventListener('keydown', function(e){
     if(e.repeat) return
@@ -16,6 +33,7 @@ document.addEventListener('keydown', function(e){
             myCharacter.walkNorth()
         break;
     }
+    socket.emit('update', myCharacter)
 })
 
 document.addEventListener('keyup', function(e){
@@ -33,4 +51,5 @@ document.addEventListener('keyup', function(e){
             myCharacter.stopNorth()
         break;
     }
+    socket.emit('update', myCharacter)
 })

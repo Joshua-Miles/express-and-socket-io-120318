@@ -1,120 +1,70 @@
 class Character extends GameObject{
 
     constructor(name){
-        super()
-        let character = this;
+        super('/character')
         this.name = name
         this.width = 50
         this.speed = 3
-        this.movement = {
-            
-            get east(){
-                return this._east
-            },
-            
-            set east(value){
-                this._east = value
-                if(value != null) character.selectedSprite = 'walkright'
-                else if (this.stopped) character.selectedSprite = 'static'
-            },
-
-            get west(){
-                return this._west
-            },
-            
-            set west(value){
-                this._west = value
-                if(value != null) character.selectedSprite = 'walkleft'
-                else if (this.stopped) character.selectedSprite = 'static'
-            },
-
-            get south(){
-                return this._south
-            },
-            
-            set south(value){
-                this._south = value
-                if(value != null) character.selectedSprite = 'walkdown'
-                else if (this.stopped) character.selectedSprite = 'static'
-            },
-
-            get north(){
-                return this._north
-            },
-            
-            set north(value){
-                this._north = value
-                if(value != null) character.selectedSprite = 'walkup'
-                else if (this.stopped) character.selectedSprite = 'static'
-            },
-
-            get stopped(){
-                return [
-                    this._east,
-                    this._west,
-                    this._north, 
-                    this._sourth
-                ].every( direction => direction == null)
-            },
-
-            _east: null,
-            _west: null,
-            _north: null,
-            _south: null
+        this.direction = {
+            x: 0,
+            y: 0
         }
+        this.movement = setInterval( () => {
+            this.x += this.speed * this.direction.x
+            this.y += this.speed * this.direction.y
+            if(this.direction.x == 0 && this.direction.y == 0) this.selectedSprite = 'static'
+        }, 1000 / settings.framesPerSecond)
     }
 
     walkEast(){
-        this.stop()
-        this.movement.east = setInterval(() => {
-           this.x = this.x + this.speed
-        }, 1000 / settings.framesPerSecond)  
+        this.selectedSprite = 'walkright'
+        this.direction.x = 1
     }
     
     walkWest(){
-        this.stop()
-        this.movement.west = setInterval(() => {
-           this.x = this.x -this.speed
-        }, 1000 / settings.framesPerSecond)  
+        this.selectedSprite = 'walkleft'
+        this.direction.x = -1
     }
     
     walkNorth(){
-        this.stop()
-        this.movement.north = setInterval(() => {
-           this.y = this.y + this.speed
-        }, 1000 / settings.framesPerSecond)  
+        this.selectedSprite = 'walkup'
+        this.direction.y = 1
     }
     
     walkSouth(){
-        this.stop()
-        this.movement.south = setInterval(() => {
-           this.y = this.y -this.speed
-        }, 1000 / settings.framesPerSecond)  
+        this.selectedSprite = 'walkdown'
+        this.direction.y = -1 
     }
 
     stopEast(){
-        clearTimeout(this.movement.east)
-        this.movement.east = null
+       this.direction.x = 0 
     }
 
     stopWest(){
-        clearTimeout(this.movement.west)
-        this.movement.west = null
+        this.direction.x = 0
     }
 
     stopNorth(){
-        clearTimeout(this.movement.north)
-        this.movement.north = null
+        this.direction.y = 0
     }
 
     stopSouth(){
-        clearTimeout(this.movement.south)
-        this.movement.south = null
+        this.direction.y = 0
     }
     
     stop(){
-        Object.values(this.movement).forEach(clearInterval)
-        this.selectedSprite = 'static'
+        this.direction.x = 0
+        this.direction.y = 0
+    }
+
+    toJSON(){
+        return {
+            name: this.name,
+            direction: this.direction,
+            selectedSprite: this.selectedSprite,
+            x: this.x,
+            y: this.y
+        }
     }
 
 }

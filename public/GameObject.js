@@ -1,6 +1,6 @@
 class GameObject {
 
-    constructor(tagName = 'img', spritePath = '/character'){
+    constructor(spritePath){
         this.spritePath = spritePath
         this.element = document.createElement('div')
         this.imageElement = document.createElement('img')
@@ -9,7 +9,6 @@ class GameObject {
         this.element.append(
             this.labelElement,
             this.imageElement,
-            
         )
         this.element.style.position = 'absolute'
         this.x = 0
@@ -18,7 +17,12 @@ class GameObject {
         document.body.append(this.element)
     }
 
+    get name(){
+        return this._name
+    }
+
     set name(value){
+        this._name = value
         this.labelElement.innerText = value
     }
 
@@ -63,6 +67,7 @@ class GameObject {
     }
 
     set selectedSprite(value){
+        if(this._selectedSprite == value) return
         this._selectedSprite = value 
         this.imageElement.src = this.fullSpritePath
     }
